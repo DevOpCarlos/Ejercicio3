@@ -2,12 +2,24 @@ package com.carlosflores.ejercicio3
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.add
+import androidx.fragment.app.commit
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.carlosflores.ejercicio3.Adapters.UsuariosAdapter
 import com.carlosflores.ejercicio3.AppDatabases.AppDatabase
 import com.carlosflores.ejercicio3.Entities.Usuario
+import com.carlosflores.ejercicio3.Fragments.EjemploFragment
+import com.carlosflores.ejercicio3.Repositories.MainRepository
+import com.carlosflores.ejercicio3.ViewModels.MainViewModel
+import com.carlosflores.ejercicio3.ViewModels.ViewModelFactory
 import com.carlosflores.ejercicio3.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,22 +36,28 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(binding.root)
 
-        val db = AppDatabase.getDatabase(this)
+        val adapter = UsuariosAdapter(ArrayList())
 
-        var user = Usuario(null, "Carlos", "Perrito123", true)
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.adapter = adapter
 
-        lifecycleScope.launch(Dispatchers.IO) {
+        val viewModel : MainViewModel by viewModels {
+            ViewModelFactory(MainRepository(AppDatabase.getDatabase(this)))
+        }
 
-            var usuario = db.UsuarioDAO().selectUsuario(1)
+        binding.botonAbrirFragment.setOnClickListener {
 
-            withContext(Dispatchers.Main) {
+            viewModel.datoAPasar = "Hola, este dato viene del activity"
 
-                binding.txtUsuario.text = usuario.username
-                binding.txtPassword.text = usuario.password
-
-            }
+            EjemploFragment().show(supportFragmentManager, "ejemploFragment")
 
         }
+
+        viewModel.selectUsuarioConPersona().observe(this, Observer { listaUsuarios ->
+
+            adapter.updateUsuarios(ArrayList(listaUsuarios))
+
+        })
 
     }
 }

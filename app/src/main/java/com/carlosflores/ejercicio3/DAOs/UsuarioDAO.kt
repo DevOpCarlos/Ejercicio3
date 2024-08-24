@@ -6,6 +6,8 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.carlosflores.ejercicio3.Entities.Usuario
+import com.carlosflores.ejercicio3.POJOs.UsuarioConPersona
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UsuarioDAO {
@@ -20,8 +22,15 @@ interface UsuarioDAO {
     fun deleteUsuario(usuario: Usuario)
 
     @Query(" SELECT * FROM usuario ")
-    fun selectAllUsuarios() : List<Usuario>
+    fun selectAllUsuarios() : Flow<List<Usuario>>
 
     @Query(" SELECT * FROM usuario WHERE id = :id ")
-    fun selectUsuario(id : Int) : Usuario
+    fun selectUsuario(id : Int) : Flow<Usuario>
+
+    @Query("""
+        
+        SELECT usuario.username, persona.primer_nombre as primerNombre, persona.primer_apellido as primerApellido FROM usuario INNER JOIN persona ON usuario.id_persona = persona.id
+        
+    """)
+    fun selectUsuariosConPersona() : Flow<List<UsuarioConPersona>>
 }

@@ -5,9 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.carlosflores.ejercicio3.DAOs.UsuarioDAO
+import com.carlosflores.ejercicio3.Entities.Persona
 import com.carlosflores.ejercicio3.Entities.Usuario
 
-@Database(entities = [Usuario::class], version = 1)
+@Database(entities = [Usuario::class, Persona::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun UsuarioDAO() : UsuarioDAO
